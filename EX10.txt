@@ -1,0 +1,760 @@
+SET SERVEROUTPUT ON;
+
+DECLARE
+    parim_tulemus NUMBER;
+BEGIN
+    SELECT MAX(voorkeel)
+    INTO parim_tulemus
+    FROM lepikult.kandidaadid;
+  
+DBMS_OUTPUT.PUT_LINE('Parim võõrkeeletulemus: ' || parim_tulemus);
+  
+FOR record IN (
+    SELECT eesnimi, perenimi, voorkeel, parim_tulemus - voorkeel AS mahajaamus_parimast
+    FROM lepikult.kandidaadid
+    ORDER BY voorkeel DESC
+    ) LOOP
+    DBMS_OUTPUT.PUT_LINE('Üliõpilane: ' || record.eesnimi || ' ' || record.perenimi);
+    DBMS_OUTPUT.PUT_LINE('Tulemus: ' || record.voorkeel);
+    DBMS_OUTPUT.PUT_LINE('Mahajaamus: ' || record.mahajaamus_parimast);
+    END LOOP;
+END;
+/
+
+
+
+SET SERVEROUTPUT ON;
+
+DECLARE
+    oppeaine VARCHAR2(100) := '&oppeaine_nimi';
+    yliopilane VARCHAR2(100) := '&yliopilase_nimi';
+    toode_arv NUMBER := 0;
+    kokku_punkte NUMBER := 0;
+    oppeaine_id VARCHAR(10);
+    yliopilane_id VARCHAR(11);
+BEGIN
+    BEGIN
+        SELECT kood
+        INTO oppeaine_id
+        FROM lepikult.oppeained
+        WHERE kood = oppeaine;
+    END;
+  
+    SELECT id
+    INTO yliopilane_id
+    FROM lepikult.yliopilased
+    WHERE eesnimi || ' ' || perenimi = yliopilane;
+
+    SELECT
+        COUNT(DISTINCT too_nr), NVL(SUM(parim_tulemus), 0)
+    INTO toode_arv, kokku_punkte
+    FROM (
+        SELECT too_nr, MAX(punktid) AS parim_tulemus
+        FROM lepikult.koduylesanded
+        WHERE oppeaine = oppeaine_id AND yliopilane = yliopilane_id
+    GROUP BY too_nr
+  );
+  
+  DBMS_OUTPUT.PUT_LINE('Üliõpilane: ' || yliopilane);
+  DBMS_OUTPUT.PUT_LINE('Õppeaine: ' || oppeaine);
+  DBMS_OUTPUT.PUT_LINE('Saadetud kodutööde arv: ' || toode_arv);
+  DBMS_OUTPUT.PUT_LINE('Kokku punkte: ' || kokku_punkte);
+  
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        DBMS_OUTPUT.PUT_LINE('VIGA: Õppeainet või üliõpilast ei leitud!');
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('VIGA: ' || SQLERRM);
+END;
+/
+
+-------------------------------------------------------------------------------------
+
+Parim võõrkeeletulemus: 97
+Üliõpilane: EGON LEHTER
+Tulemus: 97
+Mahajaamus: 0
+Üliõpilane: TARMO LEHEMAA
+Tulemus: 96
+Mahajaamus: 1
+Üliõpilane: MIHKEL KALDVEE
+Tulemus: 96
+Mahajaamus: 1
+Üliõpilane: ELMO EENSAAR
+Tulemus: 95
+Mahajaamus: 2
+Üliõpilane: JAAN LEIN
+Tulemus: 95
+Mahajaamus: 2
+Üliõpilane: KARIINA šMARIK
+Tulemus: 95
+Mahajaamus: 2
+Üliõpilane: TIMO PIHL
+Tulemus: 94
+Mahajaamus: 3
+Üliõpilane: ARNE VALDAS
+Tulemus: 94
+Mahajaamus: 3
+Üliõpilane: MARTIN TOMINGAS
+Tulemus: 94
+Mahajaamus: 3
+Üliõpilane: JAANUS SAAR
+Tulemus: 93
+Mahajaamus: 4
+Üliõpilane: PRIIT MŽTLIK
+Tulemus: 93
+Mahajaamus: 4
+Üliõpilane: VAIKO TATTER
+Tulemus: 93
+Mahajaamus: 4
+Üliõpilane: HEIMAR KALLAK
+Tulemus: 93
+Mahajaamus: 4
+Üliõpilane: SILVER PALLO
+Tulemus: 92
+Mahajaamus: 5
+Üliõpilane: MART LELUMEES
+Tulemus: 92
+Mahajaamus: 5
+Üliõpilane: RENNO LAUR
+Tulemus: 91
+Mahajaamus: 6
+Üliõpilane: MŽRTEN RåIGAS
+Tulemus: 91
+Mahajaamus: 6
+Üliõpilane: MIHKEL NEIMAR
+Tulemus: 91
+Mahajaamus: 6
+Üliõpilane: TAUNO KARU
+Tulemus: 91
+Mahajaamus: 6
+Üliõpilane: RANNER LIGI
+Tulemus: 90
+Mahajaamus: 7
+Üliõpilane: MARIO REBANE
+Tulemus: 90
+Mahajaamus: 7
+Üliõpilane: ANDREI JAKSON
+Tulemus: 90
+Mahajaamus: 7
+Üliõpilane: REINO LAAST
+Tulemus: 90
+Mahajaamus: 7
+Üliõpilane: ILMAR BAUMAN
+Tulemus: 89
+Mahajaamus: 8
+Üliõpilane: KRISTO MARTINSON
+Tulemus: 89
+Mahajaamus: 8
+Üliõpilane: PRIIT PIIRSALU
+Tulemus: 89
+Mahajaamus: 8
+Üliõpilane: OLGA PRIKS
+Tulemus: 89
+Mahajaamus: 8
+Üliõpilane: PRIIT LIGI
+Tulemus: 88
+Mahajaamus: 9
+Üliõpilane: TANEL KROON
+Tulemus: 88
+Mahajaamus: 9
+Üliõpilane: MARTIN EENSAAR
+Tulemus: 88
+Mahajaamus: 9
+Üliõpilane: ANDRES TAUR
+Tulemus: 88
+Mahajaamus: 9
+Üliõpilane: MART VESIAID
+Tulemus: 88
+Mahajaamus: 9
+Üliõpilane: JšRI GROSSMANN
+Tulemus: 88
+Mahajaamus: 9
+Üliõpilane: ARTJOM KILK
+Tulemus: 87
+Mahajaamus: 10
+Üliõpilane: MAREK KIRSIPUU
+Tulemus: 87
+Mahajaamus: 10
+Üliõpilane: NEEME LEIBAK
+Tulemus: 87
+Mahajaamus: 10
+Üliõpilane: VIRGO JŽRVEOJA
+Tulemus: 87
+Mahajaamus: 10
+Üliõpilane: KALEV SEEBA
+Tulemus: 87
+Mahajaamus: 10
+Üliõpilane: KAIMO MŽE
+Tulemus: 87
+Mahajaamus: 10
+Üliõpilane: EIRIK PALLOTEDDER
+Tulemus: 87
+Mahajaamus: 10
+Üliõpilane: TRIIN PEENSALU
+Tulemus: 86
+Mahajaamus: 11
+Üliõpilane: JANIKA ASSOR
+Tulemus: 86
+Mahajaamus: 11
+Üliõpilane: TANEL AADLI
+Tulemus: 86
+Mahajaamus: 11
+Üliõpilane: DENISS ANDRESSON
+Tulemus: 86
+Mahajaamus: 11
+Üliõpilane: TAAVI AASAV
+Tulemus: 86
+Mahajaamus: 11
+Üliõpilane: ALLAN NURMITS
+Tulemus: 86
+Mahajaamus: 11
+Üliõpilane: SILVER LIIVAK
+Tulemus: 85
+Mahajaamus: 12
+Üliõpilane: LAURI POLL
+Tulemus: 85
+Mahajaamus: 12
+Üliõpilane: MARJU HILLEP
+Tulemus: 85
+Mahajaamus: 12
+Üliõpilane: TOOM TIIDEMANN
+Tulemus: 84
+Mahajaamus: 13
+Üliõpilane: PEEP PRIKS
+Tulemus: 84
+Mahajaamus: 13
+Üliõpilane: JOHAN SEPP
+Tulemus: 84
+Mahajaamus: 13
+Üliõpilane: SVEN KOSHELEV
+Tulemus: 84
+Mahajaamus: 13
+Üliõpilane: REEMET PETROV
+Tulemus: 84
+Mahajaamus: 13
+Üliõpilane: ALEKSANDRA SILLAMAA
+Tulemus: 83
+Mahajaamus: 14
+Üliõpilane: ERKKI KOOKLA
+Tulemus: 83
+Mahajaamus: 14
+Üliõpilane: URMAS ANDRE
+Tulemus: 83
+Mahajaamus: 14
+Üliõpilane: MARKUS KUZNETSOV
+Tulemus: 83
+Mahajaamus: 14
+Üliõpilane: JAANO PAAP
+Tulemus: 83
+Mahajaamus: 14
+Üliõpilane: MAKSIM OTTAS
+Tulemus: 83
+Mahajaamus: 14
+Üliõpilane: URMO PEETS
+Tulemus: 82
+Mahajaamus: 15
+Üliõpilane: SIIM EERME
+Tulemus: 82
+Mahajaamus: 15
+Üliõpilane: LEONID OTSALAINEN
+Tulemus: 82
+Mahajaamus: 15
+Üliõpilane: JANEK TASANE
+Tulemus: 81
+Mahajaamus: 16
+Üliõpilane: RAIT DAUB
+Tulemus: 81
+Mahajaamus: 16
+Üliõpilane: PRIIT RAMMUL
+Tulemus: 81
+Mahajaamus: 16
+Üliõpilane: MIHKEL HINTSOV
+Tulemus: 81
+Mahajaamus: 16
+Üliõpilane: MIKK PRIKS
+Tulemus: 80
+Mahajaamus: 17
+Üliõpilane: MARKO NIRK
+Tulemus: 80
+Mahajaamus: 17
+Üliõpilane: KIRILL SåMER
+Tulemus: 80
+Mahajaamus: 17
+Üliõpilane: PRIIDIK BAMBERG
+Tulemus: 80
+Mahajaamus: 17
+Üliõpilane: DENIS SEPP
+Tulemus: 80
+Mahajaamus: 17
+Üliõpilane: MIHKEL AAVIK
+Tulemus: 80
+Mahajaamus: 17
+Üliõpilane: TIIT RANDNA
+Tulemus: 80
+Mahajaamus: 17
+Üliõpilane: JOOSEP VEERSALU
+Tulemus: 80
+Mahajaamus: 17
+Üliõpilane: KERDO PŽRNASTE
+Tulemus: 80
+Mahajaamus: 17
+Üliõpilane: TAAVO LEINO
+Tulemus: 80
+Mahajaamus: 17
+Üliõpilane: KEIO-MARGUS RIKKEN
+Tulemus: 79
+Mahajaamus: 18
+Üliõpilane: HENDRIK VALLER
+Tulemus: 79
+Mahajaamus: 18
+Üliõpilane: PRIIT SAAR
+Tulemus: 79
+Mahajaamus: 18
+Üliõpilane: IVARI RANDMA
+Tulemus: 79
+Mahajaamus: 18
+Üliõpilane: ALAR EMAJåE
+Tulemus: 78
+Mahajaamus: 19
+Üliõpilane: IGOR LABE
+Tulemus: 78
+Mahajaamus: 19
+Üliõpilane: REILI SAGAJA
+Tulemus: 78
+Mahajaamus: 19
+Üliõpilane: CAROLYN ALEKSEJEV
+Tulemus: 78
+Mahajaamus: 19
+Üliõpilane: EERO METS
+Tulemus: 77
+Mahajaamus: 20
+Üliõpilane: SIIM KåIV
+Tulemus: 77
+Mahajaamus: 20
+Üliõpilane: RAUL PALLAS
+Tulemus: 77
+Mahajaamus: 20
+Üliõpilane: KRISTJAN PALUTAJA
+Tulemus: 76
+Mahajaamus: 21
+Üliõpilane: RAIDO HåBE
+Tulemus: 76
+Mahajaamus: 21
+Üliõpilane: ALEKSANDR LILLAK
+Tulemus: 76
+Mahajaamus: 21
+Üliõpilane: MART JåGEVA
+Tulemus: 76
+Mahajaamus: 21
+Üliõpilane: TARVO TELLING
+Tulemus: 76
+Mahajaamus: 21
+Üliõpilane: MATTIAS PILV
+Tulemus: 76
+Mahajaamus: 21
+Üliõpilane: PRIIT åIGLANE
+Tulemus: 76
+Mahajaamus: 21
+Üliõpilane: VEIKO EDING
+Tulemus: 76
+Mahajaamus: 21
+Üliõpilane: SIIM NåOMAA
+Tulemus: 75
+Mahajaamus: 22
+Üliõpilane: RAGNAR JAAKSOO
+Tulemus: 75
+Mahajaamus: 22
+Üliõpilane: IVO NILK
+Tulemus: 75
+Mahajaamus: 22
+Üliõpilane: OTT KILP
+Tulemus: 75
+Mahajaamus: 22
+Üliõpilane: ERASMUS BONDARVE
+Tulemus: 75
+Mahajaamus: 22
+Üliõpilane: MARVIN åUNAPUU
+Tulemus: 75
+Mahajaamus: 22
+Üliõpilane: ROLAND LUMBERG
+Tulemus: 75
+Mahajaamus: 22
+Üliõpilane: ALLAN RššTELMAA
+Tulemus: 74
+Mahajaamus: 23
+Üliõpilane: AHTI KAIGAS
+Tulemus: 74
+Mahajaamus: 23
+Üliõpilane: MARITE JEGONJAN
+Tulemus: 74
+Mahajaamus: 23
+Üliõpilane: ALEKSEI JALASTO
+Tulemus: 74
+Mahajaamus: 23
+Üliõpilane: RENNAT VEERBAUM
+Tulemus: 74
+Mahajaamus: 23
+Üliõpilane: JAANUS VILLEMS
+Tulemus: 74
+Mahajaamus: 23
+Üliõpilane: MADIS ROSEN
+Tulemus: 73
+Mahajaamus: 24
+Üliõpilane: ALVAR VEILBERG
+Tulemus: 73
+Mahajaamus: 24
+Üliõpilane: AIMAR HALLIKMA
+Tulemus: 72
+Mahajaamus: 25
+Üliõpilane: KAAREL KALJUR
+Tulemus: 72
+Mahajaamus: 25
+Üliõpilane: TOOMAS MIHELSON
+Tulemus: 72
+Mahajaamus: 25
+Üliõpilane: MARTI ROOTS
+Tulemus: 72
+Mahajaamus: 25
+Üliõpilane: LEHOR LAMP
+Tulemus: 72
+Mahajaamus: 25
+Üliõpilane: KAIRE PILDER
+Tulemus: 72
+Mahajaamus: 25
+Üliõpilane: KATI TAMM
+Tulemus: 72
+Mahajaamus: 25
+Üliõpilane: MART NIMMERFELDT
+Tulemus: 72
+Mahajaamus: 25
+Üliõpilane: MARTIN ONOHHOV
+Tulemus: 72
+Mahajaamus: 25
+Üliõpilane: TARMO VILT
+Tulemus: 72
+Mahajaamus: 25
+Üliõpilane: ANTTI LŽŽNE
+Tulemus: 72
+Mahajaamus: 25
+Üliõpilane: PAMELA BESSONOV
+Tulemus: 71
+Mahajaamus: 26
+Üliõpilane: VERON MŽE
+Tulemus: 71
+Mahajaamus: 26
+Üliõpilane: INDREK ZAHKNA
+Tulemus: 71
+Mahajaamus: 26
+Üliõpilane: ERIK ERVIN
+Tulemus: 71
+Mahajaamus: 26
+Üliõpilane: VILJO LEIN
+Tulemus: 71
+Mahajaamus: 26
+Üliõpilane: MIHKEL MALSROOS
+Tulemus: 70
+Mahajaamus: 27
+Üliõpilane: MEELIS MEDAR
+Tulemus: 70
+Mahajaamus: 27
+Üliõpilane: KASPAR PIKANI
+Tulemus: 70
+Mahajaamus: 27
+Üliõpilane: KAUR PåLDMAA
+Tulemus: 70
+Mahajaamus: 27
+Üliõpilane: NELE MARNAUSSOV
+Tulemus: 70
+Mahajaamus: 27
+Üliõpilane: ILLE VEILBERG
+Tulemus: 69
+Mahajaamus: 28
+Üliõpilane: ARVO VILLEMS
+Tulemus: 69
+Mahajaamus: 28
+Üliõpilane: GERT KåIV
+Tulemus: 69
+Mahajaamus: 28
+Üliõpilane: ROMAN JAAKSON
+Tulemus: 69
+Mahajaamus: 28
+Üliõpilane: LAURI SELGE
+Tulemus: 69
+Mahajaamus: 28
+Üliõpilane: LAURI ERVALD
+Tulemus: 68
+Mahajaamus: 29
+Üliõpilane: REIGO VASSUS
+Tulemus: 68
+Mahajaamus: 29
+Üliõpilane: KRISTO VOOGLA
+Tulemus: 68
+Mahajaamus: 29
+Üliõpilane: ERKKI SåLG
+Tulemus: 68
+Mahajaamus: 29
+Üliõpilane: RAUNO METSAOTS
+Tulemus: 67
+Mahajaamus: 30
+Üliõpilane: MIKK SARAPU
+Tulemus: 67
+Mahajaamus: 30
+Üliõpilane: ANNELY MESILA
+Tulemus: 67
+Mahajaamus: 30
+Üliõpilane: VELLO KOHARI
+Tulemus: 67
+Mahajaamus: 30
+Üliõpilane: MARTIN VASSUS
+Tulemus: 67
+Mahajaamus: 30
+Üliõpilane: REIMO KLASEN
+Tulemus: 67
+Mahajaamus: 30
+Üliõpilane: MARTIN AUN
+Tulemus: 67
+Mahajaamus: 30
+Üliõpilane: HARRI ADER
+Tulemus: 66
+Mahajaamus: 31
+Üliõpilane: TORMI MåNJAM
+Tulemus: 66
+Mahajaamus: 31
+Üliõpilane: ANDRE LEINVALD
+Tulemus: 66
+Mahajaamus: 31
+Üliõpilane: MŽRT KALLASTE
+Tulemus: 66
+Mahajaamus: 31
+Üliõpilane: ALEKSANDR KOOP
+Tulemus: 65
+Mahajaamus: 32
+Üliõpilane: MARTIN ENNUS
+Tulemus: 65
+Mahajaamus: 32
+Üliõpilane: SIIM LAURIMAA
+Tulemus: 65
+Mahajaamus: 32
+Üliõpilane: KERT ERDMANN
+Tulemus: 65
+Mahajaamus: 32
+Üliõpilane: MEELIS SOIKKA
+Tulemus: 64
+Mahajaamus: 33
+Üliõpilane: KAAREL TåRTO¾NåI
+Tulemus: 64
+Mahajaamus: 33
+Üliõpilane: KASPAR SOKK
+Tulemus: 64
+Mahajaamus: 33
+Üliõpilane: ALEKSEI PIIRSALU
+Tulemus: 64
+Mahajaamus: 33
+Üliõpilane: SANDER MŽNNASSON
+Tulemus: 63
+Mahajaamus: 34
+Üliõpilane: TIIT HIRV
+Tulemus: 63
+Mahajaamus: 34
+Üliõpilane: NATALIA RAUDSEPP
+Tulemus: 62
+Mahajaamus: 35
+Üliõpilane: ILJA PIKK
+Tulemus: 62
+Mahajaamus: 35
+Üliõpilane: JAANUS JAASKA
+Tulemus: 62
+Mahajaamus: 35
+Üliõpilane: INDREK LEIST
+Tulemus: 61
+Mahajaamus: 36
+Üliõpilane: ALEKSANDR RUUS
+Tulemus: 61
+Mahajaamus: 36
+Üliõpilane: HANNES JŽRVI
+Tulemus: 60
+Mahajaamus: 37
+Üliõpilane: ALARI MOISAR
+Tulemus: 60
+Mahajaamus: 37
+Üliõpilane: AHTO EMAJåE
+Tulemus: 60
+Mahajaamus: 37
+Üliõpilane: MAREK KORB
+Tulemus: 60
+Mahajaamus: 37
+Üliõpilane: KUUNO HEIN
+Tulemus: 60
+Mahajaamus: 37
+Üliõpilane: MAREK PIKKAR
+Tulemus: 60
+Mahajaamus: 37
+Üliõpilane: MAIT LEIGER
+Tulemus: 60
+Mahajaamus: 37
+Üliõpilane: SVEN MUTLI
+Tulemus: 60
+Mahajaamus: 37
+Üliõpilane: VELLO TELVAR
+Tulemus: 60
+Mahajaamus: 37
+Üliõpilane: KRISTJAN MULD
+Tulemus: 58
+Mahajaamus: 39
+Üliõpilane: MAREK TREI
+Tulemus: 58
+Mahajaamus: 39
+Üliõpilane: MAIK TEDER
+Tulemus: 58
+Mahajaamus: 39
+Üliõpilane: OLEG ISRAEL
+Tulemus: 57
+Mahajaamus: 40
+Üliõpilane: KALLE VARES
+Tulemus: 56
+Mahajaamus: 41
+Üliõpilane: TAURI JšRGENSON
+Tulemus: 56
+Mahajaamus: 41
+Üliõpilane: VALTER KIIS
+Tulemus: 56
+Mahajaamus: 41
+Üliõpilane: KADRI KAIS
+Tulemus: 56
+Mahajaamus: 41
+Üliõpilane: VERONIKA VŽLI
+Tulemus: 55
+Mahajaamus: 42
+Üliõpilane: OLIVER DANILAS
+Tulemus: 55
+Mahajaamus: 42
+Üliõpilane: GERD SIIMON
+Tulemus: 55
+Mahajaamus: 42
+Üliõpilane: KRISTJAN KAMBEK
+Tulemus: 55
+Mahajaamus: 42
+Üliõpilane: TANEL VIHMANN
+Tulemus: 54
+Mahajaamus: 43
+Üliõpilane: LAAS FOMAT¾KIN
+Tulemus: 54
+Mahajaamus: 43
+Üliõpilane: KRISTJAN BREMANN
+Tulemus: 52
+Mahajaamus: 45
+Üliõpilane: EVELIN ELJANDI
+Tulemus: 50
+Mahajaamus: 47
+Üliõpilane: KRISTJAN MAAPALU
+Tulemus: 48
+Mahajaamus: 49
+Üliõpilane: MART MAIMISTON
+Tulemus: 48
+Mahajaamus: 49
+Üliõpilane: SIIM MOORAST
+Tulemus: 43
+Mahajaamus: 54
+Üliõpilane: RAVEL EVERT
+Tulemus: 43
+Mahajaamus: 54
+Üliõpilane: MAURI TOMP
+Tulemus: 35
+Mahajaamus: 62
+
+
+PL/SQL procedure successfully completed.
+
+old:DECLARE
+    oppeaine VARCHAR2(100) := '&oppeaine_nimi';
+    yliopilane VARCHAR2(100) := '&yliopilase_nimi';
+    toode_arv NUMBER := 0;
+    kokku_punkte NUMBER := 0;
+    oppeaine_id VARCHAR(10);
+    yliopilane_id VARCHAR(11);
+BEGIN
+    BEGIN
+        SELECT kood
+        INTO oppeaine_id
+        FROM lepikult.oppeained
+        WHERE kood = oppeaine;
+    END;
+
+    SELECT id
+    INTO yliopilane_id
+    FROM lepikult.yliopilased
+    WHERE eesnimi || ' ' || perenimi = yliopilane;
+
+    SELECT
+        COUNT(DISTINCT too_nr), NVL(SUM(parim_tulemus), 0)
+    INTO toode_arv, kokku_punkte
+    FROM (
+        SELECT too_nr, MAX(punktid) AS parim_tulemus
+        FROM lepikult.koduylesanded
+        WHERE oppeaine = oppeaine_id AND yliopilane = yliopilane_id
+    GROUP BY too_nr
+  );
+
+  DBMS_OUTPUT.PUT_LINE('Üliõpilane: ' || yliopilane);
+  DBMS_OUTPUT.PUT_LINE('Õppeaine: ' || oppeaine);
+  DBMS_OUTPUT.PUT_LINE('Saadetud kodutööde arv: ' || toode_arv);
+  DBMS_OUTPUT.PUT_LINE('Kokku punkte: ' || kokku_punkte);
+
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        DBMS_OUTPUT.PUT_LINE('VIGA: Õppeainet või üliõpilast ei leitud!');
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('VIGA: ' || SQLERRM);
+END;
+
+new:DECLARE
+    oppeaine VARCHAR2(100) := 'ICA0016';
+    yliopilane VARCHAR2(100) := 'Katrin Kask';
+    toode_arv NUMBER := 0;
+    kokku_punkte NUMBER := 0;
+    oppeaine_id VARCHAR(10);
+    yliopilane_id VARCHAR(11);
+BEGIN
+    BEGIN
+        SELECT kood
+        INTO oppeaine_id
+        FROM lepikult.oppeained
+        WHERE kood = oppeaine;
+    END;
+
+    SELECT id
+    INTO yliopilane_id
+    FROM lepikult.yliopilased
+    WHERE eesnimi || ' ' || perenimi = yliopilane;
+
+    SELECT
+        COUNT(DISTINCT too_nr), NVL(SUM(parim_tulemus), 0)
+    INTO toode_arv, kokku_punkte
+    FROM (
+        SELECT too_nr, MAX(punktid) AS parim_tulemus
+        FROM lepikult.koduylesanded
+        WHERE oppeaine = oppeaine_id AND yliopilane = yliopilane_id
+    GROUP BY too_nr
+  );
+
+  DBMS_OUTPUT.PUT_LINE('Üliõpilane: ' || yliopilane);
+  DBMS_OUTPUT.PUT_LINE('Õppeaine: ' || oppeaine);
+  DBMS_OUTPUT.PUT_LINE('Saadetud kodutööde arv: ' || toode_arv);
+  DBMS_OUTPUT.PUT_LINE('Kokku punkte: ' || kokku_punkte);
+
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        DBMS_OUTPUT.PUT_LINE('VIGA: Õppeainet või üliõpilast ei leitud!');
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('VIGA: ' || SQLERRM);
+END;
+Üliõpilane: Katrin Kask
+Õppeaine: ICA0016
+Saadetud kodutööde arv: 3
+Kokku punkte: 20
+
+
+PL/SQL procedure successfully completed.
+
+
